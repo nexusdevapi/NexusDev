@@ -343,24 +343,6 @@ Exemplo de resposta:
 
 ---
 
-#### 4.6 Busca com /procurar ou através do botão **`Procurar 🔎`**
-
-O bot permite buscar informações específicas sobre uma vacina ou região pelo nome tanto através de comandos quanto de botões. Para isso, basta utilizar o comando **`/procurar`** ou o botão **`Procurar 🔎`** e informar o nome da vacina, como no exemplo a seguir (comando):
-
-```
-/procurar <nome_da_vacina_ou_região>
-```
-
-Exemplos:
-
-```
-/procurar dT
-/procurar centro-oeste
-/procurar nordeste
-```
-
----
-
 ### 5. Observações
 
 * O bot precisa estar **em execução** para responder às mensagens.
