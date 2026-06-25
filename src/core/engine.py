@@ -267,7 +267,8 @@ def dia(nascimento):
 def idade(id):
     ano = mes = semana = -1
     resultado = ''
-    max = mini = 0
+    mini = 0
+    ystat = False
     try:
 
         if 'year' in id or 'ano' in id:
@@ -279,7 +280,7 @@ def idade(id):
             mes = int(id.split()[0])
         elif 'semana' in id or 'week' in id:
             if id == 'semana':
-                semana = 1
+                semana = '1 semana'
             semana = int(id.split()[0])
         
         if semana != -1:
@@ -306,15 +307,12 @@ def idade(id):
     for info in data:
         if info['idade_min'] is not None:
             mini = info["idade_min"]
-
-        if info['idade_max'] is not None:
-            max = info["idade_max"]
-
+            
         if info['idade_min'] is None:
             info['idade_min'] = mini
 
-        if info['idade_max'] is None:
-            info["idade_max"] =  max
+        if info['idade_max'] is None or info['idade_max'] == 0:
+            info["idade_max"] = -1
 
         if semana != -1 and ano == mes == -1:
             match = re.search(r'(\d+)ª', info['dose'])
@@ -323,39 +321,50 @@ def idade(id):
             if info['idade_texto'] != '':
                 resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
             resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
-        elif mes == 0 and ano == 0:
-            if info['idade_min'] == info['idade_max'] == 0:
-                if info['idade_texto'] != '':
-                    resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
-                resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
-        elif mes > 0 and ano == 0:
+        elif mes > 0 and ano == -1:
             if info['idade_texto'].endswith('anos'):
                 return (resultado, grupo_periodo)
 
-            if info['idade_max'] is None:
+            if info['idade_max'] == -1:
                 if mes >= info['idade_min']:
                     if info['idade_texto'] != '':
                         resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
                     resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
             else:
-                if info['idade_min'] <= mes <= info['idade_max'] or mes >= info['idade_min']:
+                if info['idade_min'] <= mes <= info['idade_max']:
                     if info['idade_texto'] != '':
                         resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
                     resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
         else:
+            mes = ano * 12
             if info['idade_texto'].endswith('meses'):
-                continue
+                ystat = False
 
-            if info['idade_max'] is None:
-                if ano >= info['idade_min']:
-                    if info['idade_texto'] != '':
-                        resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
-                    resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
+            if info['idade_texto'].endswith('anos'):
+                ystat = True
+
+            if not ystat:
+                if info['idade_max'] == -1:
+                    if mes >= info['idade_min']:
+                        if info['idade_texto'] != '':
+                            resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
+                        resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
+                else:
+                    if info['idade_min'] <= mes <= info['idade_max']:
+                        if info['idade_texto'] != '':
+                            resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
+                        resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
             else:
-                if info['idade_min'] <= ano <= info['idade_max']:
-                    if info['idade_texto'] != '':
-                        resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
-                    resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
+                if info['idade_max'] == -1:
+                    if ano >= info['idade_min']:
+                        if info['idade_texto'] != '':
+                            resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
+                        resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
+                else:
+                    if info['idade_min'] <= ano <= info['idade_max']:
+                        if info['idade_texto'] != '':
+                            resultado += f'🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n' if resultado == '' else f'───────────────────\n\n🗓️ <b>{info['idade_texto'].replace('\n', ' ')}</b>:\n\n'
+                        resultado += f'💉 {info['vacina'].replace('\n', ' ')}\n    • {info['dose'].replace('\n', ' ')}\n\n'
     return (resultado, grupo_periodo)
 
 def localizar():
@@ -381,7 +390,7 @@ def resposta_ia(perg):
 
     Available functions:
     - greet: use when greeting. pass empty string as args
-    - pega: searches vaccines for age groups. Arguments must be exactly one of: Gestante, Criança, Adolescente e Jovem, Adulto, Idoso
+    - pega: searches vaccines for age groups. Arguments must be exactly one of: Gestante, Criança, Adolescente, Jovem, Adulto, Idoso
     - procura: searches by vaccine name (e.g. dengue, hepatite, covid)
     - cobertura: searches vaccination coverage by location. Accepts Brazilian regions (Norte, Nordeste, Centro-Oeste, Sul, Sudeste), state abbreviations (SP, RJ, MG...), or city names (e.g. Sobral, Campinas). Pass exactly what the user said as the location.
     - dia: converts a date in dd/mm/yyyy format to an age group
@@ -414,17 +423,17 @@ def resposta_ia(perg):
         if selected['funcao'] == 'pega':
             periodo = selected['args']
             normalizacao = {
-                'Jovem': 'Adolescente e Jovem',
-                'Jovens': 'Adolescente e Jovem',
-                'Adolescente': 'Adolescente e Jovem',
-                'Adolescentes': 'Adolescente e Jovem',
+                'Jovem': 'Adolescente',
+                'Jovens': 'Adolescente',
+                'Adolescente': 'Adolescente',
+                'Adolescentes': 'Adolescente',
             }
             periodo = normalizacao.get(periodo, periodo)
             resultado = pega_vacina(periodo)
             mapa_grupo = {
                 'Gestante': 'grupo_gestante',
                 'Criança': 'grupo_crianca',
-                'Adolescente e Jovem': 'grupo_jovens',
+                'Adolescente': 'grupo_jovens',
                 'Adulto': 'grupo_adulto',
                 'Idoso': 'grupo_idoso',
             }
